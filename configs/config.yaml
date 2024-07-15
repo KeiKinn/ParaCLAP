@@ -1,0 +1,32 @@
+meta:
+  dataset: /nas/databases/UAU/MSP-Podcast/
+  templates: /home/jingxin/CLAP-Andreas/compare-clap/fix_desc
+  results: /nas/staff/data_work/Xin/1_Xin/SpeechEmotionRecognition/results
+  device: cuda:0
+  tqdm_disable: True
+hparams:
+  learning_rate: 0.001
+  batch_size: 32
+  temperature: 0.003
+  epochs: 100
+  param_groups: True
+  pretrained: None
+  fix_desc: False
+finetuning:
+  freeze_text: True
+  freeze_audio: False
+models:
+  text: bert-base-uncased
+  speech: audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim
+data:
+  emotions:  # CLAP will only be trained on data annotated with these emotions
+    # - no_agreement
+    - neutral
+    - fear
+    - sadness
+    - disgust
+    - happiness
+    - other
+    - anger
+    - contempt
+    - surprise

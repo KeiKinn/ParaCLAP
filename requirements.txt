@@ -1,0 +1,9 @@
+audformat
+audmetric
+audtorch
+hydra-core
+opensmile
+scikit-learn
+tensorboard
+torch
+transformers
