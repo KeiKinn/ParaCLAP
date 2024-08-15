@@ -1,7 +1,7 @@
 meta:
-  dataset: /nas/databases/UAU/MSP-Podcast/
-  templates: /home/jingxin/CLAP-Andreas/compare-clap/fix_desc
-  results: /nas/staff/data_work/Xin/1_Xin/SpeechEmotionRecognition/results
+  dataset: 
+  templates: 
+  results:
   device: cuda:0
   tqdm_disable: True
 hparams:
