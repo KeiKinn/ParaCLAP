@@ -1,16 +1,12 @@
 import os
 
 import audmetric
-import matplotlib.pyplot as plt
 import torch
 import tqdm
 import yaml
 from hydra import compose, initialize
 from omegaconf import (
     DictConfig
-)
-from sklearn.metrics import (
-    confusion_matrix, ConfusionMatrixDisplay
 )
 from transformers import AutoTokenizer
 from transformers import logging
@@ -106,19 +102,13 @@ def evaluate(cfg, model=None, tqdm_disable=False, slurm_id=None):
         results[k] = sum([re[i][k] for i in range(5)]) / 5
     print(f'Final:\n{yaml.dump(results)}')
 
-    # save confusion-matrix
-    cm = confusion_matrix(cm_tgt, cm_pre)
-    disp = ConfusionMatrixDisplay(cm, display_labels=candidates_)
-    disp.plot()
-    plt.savefig(f'temp/iemo_{slurm_id}.png')
     return results
 
-
-def evaluate_test(cfg: DictConfig, slurm_job_id='44825') -> None:
-    for idx in range(0, 3, 1):
-        temp = os.path.join(cfg.meta.results, slurm_job_id + f'_{idx}')
-        if os.path.exists(temp):
-            print(f'evaluted on {slurm_job_id}_{idx}')
-            break
-    cfg.meta.results = temp
-    evaluate(cfg, tqdm_disable=False)
+if __name__ == '__main__':
+    logging.set_verbosity_error()
+    ckpt_path = os.path.join(os.getcwd(), 'ckpt/best.pth.tar')
+    with initialize(config_path="../configs"):
+        cfg = compose(config_name="config")
+    
+    cfg.meta.ckpt_path = ckpt_path
+    evaluate(cfg)

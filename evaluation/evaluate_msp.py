@@ -8,10 +8,12 @@ import pandas as pd
 import torch
 import tqdm
 import yaml
+from hydra import compose, initialize
 from omegaconf import (
     DictConfig
 )
 from transformers import AutoTokenizer
+from transformers import logging
 
 from dataset import (
     TargetDataset
@@ -107,12 +109,11 @@ def evaluate_msp(cfg, model=None, tqdm_disable=False):
     return results
 
 
-@hydra.main(config_path="configs", config_name="config")
-def evaluate_test(cfg: DictConfig, slurm_job_id='40732_0') -> None:
-    print(f'evaluted on {slurm_job_id}')
-    cfg.meta.results = os.path.join(cfg.meta.results, slurm_job_id)
-    evaluate_msp(cfg, tqdm_disable=True)
-
-
 if __name__ == "__main__":
-    evaluate_test()
+    logging.set_verbosity_error()
+    ckpt_path = os.path.join(os.getcwd(), 'ckpt/best.pth.tar')
+    with initialize(config_path="../configs"):
+        cfg = compose(config_name="config")
+    
+    cfg.meta.ckpt_path = ckpt_path
+    evaluate_msp(cfg)

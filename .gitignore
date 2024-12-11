@@ -1,4 +1,6 @@
 # Users
+*_.py
+*.pth.tar
 temp
 slurm*
 .envrc

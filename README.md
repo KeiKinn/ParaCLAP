@@ -23,3 +23,37 @@ The remaining scripts in this repository can be used as follows:
   - Depending on which data has been used for training, this is may be a zero-shot scenario
 
 Please find our best checkpoint at [HuggingFace](https://huggingface.co/KeiKinn/paraclap) trained and evalatuted on the MSP-Podcast. 
+
+### Evaluation
+
+1. create a directory `ckpt` in the root folder.
+
+2. download checkpoint at [HuggingFace](https://huggingface.co/KeiKinn/paraclap) and place the checkpoint  in the `ckpt` folder.
+
+2. update dataset paths in the `evaluation/evaluate_[dataset].py` files.
+
+3. run the following command:
+
+```bash
+python ./evaluation/evaluate_[dataset].py
+```
+
+### **Evaluation on Your Dataset**  
+
+#### Evaluation Template
+Please check './evaluation/evaluate_cremad.py'
+
+#### **Dataset Requirements**  
+
+Please check the './Data/cremad.py' for the dataset template. There are two requirements for your dataset to be compatible with the evaluation script:
+
+1. **Initialization** (`__init__(self)`):  
+   - Define the following variables in your dataset class:  
+     - `self.emotion_map`: A dictionary mapping emotion labels to corresponding numerical values (e.g., `{'happy': 0, 'sad': 1}`). This mapping is used for statistical analysis of predictions.  
+     - `self.emo_list`: A list of available emotion labels (e.g., `['happy', 'sad']`). This will serve as candidates during evaluation.  
+
+2. **Dataset Return Format**:  
+   Your dataset should return the following in each iteration:  
+   - `torch.Tensor(waveform)`: The audio waveform to be processed.  
+   - `emotion`: A placeholder for additional information (optional).  
+   - `self.emotion_map[emotion]`: The numerical label corresponding to the emotion of the sample.  

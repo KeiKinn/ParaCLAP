@@ -9,9 +9,7 @@ from hydra import compose, initialize
 from omegaconf import (
     DictConfig
 )
-from sklearn.metrics import (
-    confusion_matrix, ConfusionMatrixDisplay
-)
+
 from transformers import AutoTokenizer
 from transformers import logging
 
@@ -31,10 +29,6 @@ def evaluate(cfg, model=None, tqdm_disable=False):
 
     tokenizer = AutoTokenizer.from_pretrained(cfg.models.text)
     root = '[YOUR PATH]/RAVDESS/data/speech'
-    # val_transform = audtorch.transforms.Compose([
-    #     audtorch.transforms.Expand(5 * 16000, axis=-1),
-    #     audtorch.transforms.Crop([0, 5 * 16000], axis=-1)
-    # ])
 
     if model is None:
         model = CLAP(
@@ -52,7 +46,7 @@ def evaluate(cfg, model=None, tqdm_disable=False):
         print('Evaluate on training models')
 
     candidates = ["neutral","calm","happy","sad","angry","fearful","disgust","surprised"]
-    # candidates = [format_emotion(emo) for emo in candidates]
+
     candidate_tokens = tokenizer.batch_encode_plus(
         candidates,
         padding=True,
@@ -93,20 +87,15 @@ def evaluate(cfg, model=None, tqdm_disable=False):
     }
     print(f'result are {yaml.dump(results)}')
     torch.cuda.empty_cache()
-    # save confusion-matrix
-    cm = confusion_matrix(targets, predictions)
-    disp = ConfusionMatrixDisplay(cm, display_labels=ds.emo_list)
-    disp.plot()
-    plt.savefig(f'temp/rav_{slurm_id}.png')
     return results
 
 
 # @hydra.main(config_path="configs", config_name="config_iemo")
-def evaluate_test(cfg: DictConfig, slurm_job_id='43049') -> None:
-    for idx in range(0, 3, 1):
-        temp = os.path.join(cfg.meta.results, slurm_job_id + f'_{idx}')
-        if os.path.exists(temp):
-            print(f'evaluted on {slurm_job_id}_{idx}')
-            break
-    cfg.meta.results = temp
-    evaluate(cfg, tqdm_disable=False)
+def evaluate_test(cfg: DictConfig, ckpt_path=None) -> None:
+    logging.set_verbosity_error()
+    ckpt_path = os.path.join(os.getcwd(), 'ckpt/best.pth.tar')
+    with initialize(config_path="../configs"):
+        cfg = compose(config_name="config")
+    
+    cfg.meta.ckpt_path = ckpt_path
+    evaluate(cfg)
