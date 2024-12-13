@@ -25,23 +25,25 @@ The remaining scripts in this repository can be used as follows:
 Please find our best checkpoint at [HuggingFace](https://huggingface.co/KeiKinn/paraclap) trained and evalatuted on the MSP-Podcast. 
 
 ### Evaluation
+#### Evaluation on file
+1. update your candidit list and filepath in eval.py, and the checkpoint will be automaticly downloaded
 
-1. create a directory `ckpt` in the root folder.
-
-2. download checkpoint at [HuggingFace](https://huggingface.co/KeiKinn/paraclap) and place the checkpoint  in the `ckpt` folder.
-
-2. update dataset paths in the `evaluation/evaluate_[dataset].py` files.
-
-3. run the following command:
+2. run the following command:
 
 ```bash
-python ./evaluation/evaluate_[dataset].py
+python ./eval.py
+```
+
+#### Evaluation on dataset
+1. update your dataset path in eval_dataset.py, and the checkpoint will be automaticly downloaded
+
+2. run the following command:
+
+```bash
+python ./eval_dataset.py
 ```
 
 ### **Evaluation on Your Dataset**  
-
-#### Evaluation Template
-Please check './evaluation/evaluate_cremad.py'
 
 #### **Dataset Requirements**  
 

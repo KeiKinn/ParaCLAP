@@ -1,5 +1,4 @@
 import os
-from extend_path import  *
 import audmetric
 import torch
 import tqdm
@@ -23,31 +22,24 @@ from utils import (
 )
 
 
-def evaluate(cfg, model=None, tqdm_disable=False):
+def evaluate(cfg, root=None, ckpt=None, tqdm_disable=False):
     print('Evaluation on CREMA-D!')
 
     tokenizer = AutoTokenizer.from_pretrained(cfg.models.text)
-    root = '[YOUR PATH]/CREMA-D'
 
-    if model is None:
-        model = CLAP(
-            speech_name=cfg.models.speech,
-            text_name=cfg.models.text,
-            embedding_dim=768,
-        )
+    model = CLAP(
+        speech_name=cfg.models.speech,
+        text_name=cfg.models.text,
+        embedding_dim=768,
+    )
 
-        ckpt_path = os.path.join(cfg.meta.results, "best.pth.tar")
-        if os.path.exists(ckpt_path):
-            model.load_state_dict(torch.load(ckpt_path))
-            print(f"Loaded checkpoint from {ckpt_path}")
-            model.to(cfg.meta.device)
-    else:
-        print('Evaluate on training models')
+    model.load_state_dict(ckpt, strict=False)
+    model.to(cfg.meta.device)
+    print(f'Checkpoint is loaded')
     
     ds = Ds(dataset_dir=root)
 
     candidates = ds.emo_list
-    # candidates = [format_emotion(emo) for emo in candidates]
     candidate_tokens = tokenizer.batch_encode_plus(
         candidates,
         padding=True,
@@ -88,13 +80,3 @@ def evaluate(cfg, model=None, tqdm_disable=False):
     print(f'result are {yaml.dump(results)}')
     torch.cuda.empty_cache()
     return results
-
-
-if __name__ == '__main__':
-    logging.set_verbosity_error()
-    ckpt_path = os.path.join(os.getcwd(), 'ckpt/best.pth.tar')
-    with initialize(config_path="../configs"):
-        cfg = compose(config_name="config")
-    
-    cfg.meta.ckpt_path = ckpt_path
-    evaluate(cfg)
