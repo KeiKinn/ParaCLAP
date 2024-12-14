@@ -58,4 +58,17 @@ Please check the './Data/cremad.py' for the dataset template. There are two requ
    Your dataset should return the following in each iteration:  
    - `torch.Tensor(waveform)`: The audio waveform to be processed.  
    - `emotion`: A placeholder for additional information (optional).  
-   - `self.emotion_map[emotion]`: The numerical label corresponding to the emotion of the sample.  
+   - `self.emotion_map[emotion]`: The numerical label corresponding to the emotion of the sample.
+## Citation Info
+ParaCLAP has been accept at InterSpeech 2024 for presentation.
+
+```bash
+@inproceedings{Jing24_PTA,
+  title     = {ParaCLAP – Towards a general language-audio model for computational paralinguistic tasks},
+  author    = {Xin Jing and Andreas Triantafyllopoulos and Björn Schuller},
+  year      = {2024},
+  booktitle = {Interspeech 2024},
+  pages     = {1155--1159},
+  doi       = {10.21437/Interspeech.2024-1315},
+  issn      = {2958-1796},
+}
