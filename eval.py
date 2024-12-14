@@ -1,8 +1,10 @@
 import os
 import torch
-from hydra import compose, initialize
 from transformers import logging
+from transformers import AutoTokenizer
 from wrapper import EvalWrapper
+from models_xin import CLAP
+from utils import compute_similarity
 import librosa
 
 
@@ -13,40 +15,46 @@ if __name__ == '__main__':
             map_location="cpu",
             check_hash=True,
         )
-
-    with initialize(config_path="./configs"):
-        cfg = compose(config_name="config")
     
-    candidates = ['happy', 'sad', 'surprise', 'neutral']
-    wavpath = ''
-    waveform, sample_rate = librosa.load(file_path, sr=16000)
+    text_model = 'bert-base-uncased'
+    audio_model = 'audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim'
+    
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+    
+    candidates = ['happy', 'sad', 'surprise', 'angry'] # free to adapt it to your need
+    wavpath = '[Waveform path]' # single channel wavform
+
+    waveform, sample_rate = librosa.load(wavpath, sr=16000)
     x = torch.Tensor(waveform)
+
+    tokenizer = AutoTokenizer.from_pretrained(text_model)
 
     candidate_tokens = tokenizer.batch_encode_plus(
         candidates,
         padding=True,
         truncation=True,
         return_tensors='pt'
-    ).to(cfg.meta.device)
+    )
 
     model = CLAP(
-        speech_name=cfg.models.speech,
-        text_name=cfg.models.text,
+        speech_name=audio_model,
+        text_name=text_model,
         embedding_dim=768,
     )
 
-    model.load_state_dict(ckpt, strict=False)
-    model.to(cfg.meta.device)
+    model.load_state_dict(ckpt)
+    model.to(device)
     print(f'Checkpoint is loaded')
     model.eval()
 
     with torch.no_grad():
         z = model(
-            x.squeeze(1).to(cfg.meta.device),
+            x.unsqueeze(0).to(device),
             candidate_tokens
         )
-        similarity = compute_similarity(z[2], z[0], z[1])
-        prediction = similarity.T.argmax(dim=1)
+
+    similarity = compute_similarity(z[2], z[0], z[1])
+    prediction = similarity.T.argmax(dim=1)
     
     result = candidates[prediction]
 

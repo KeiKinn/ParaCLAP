@@ -7,7 +7,8 @@ class EvalWrapper:
             'iemocap': 'evaluation.evaluate_iemo',
             'ravdess': 'evaluation.evaluate_ravdess',
             'cremad-d': 'evaluation.evaluate_cremad',
-            'tess': 'evaluation.evaluate_tess'
+            'tess': 'evaluation.evaluate_tess',
+            'aibo': 'evaluation.evaluate_aibo'
         }
 
     def set_eval(self):
