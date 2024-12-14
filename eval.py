@@ -1,11 +1,10 @@
 import os
 import torch
+import librosa
 from transformers import logging
 from transformers import AutoTokenizer
-from wrapper import EvalWrapper
 from models_xin import CLAP
 from utils import compute_similarity
-import librosa
 
 
 if __name__ == '__main__':
